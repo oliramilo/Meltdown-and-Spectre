@@ -4,6 +4,4 @@
 
 [Link to meltdown](https://seedsecuritylabs.org/Labs_16.04/System/Meltdown_Attack/)
 
-
-
 [Link to spectre](https://seedsecuritylabs.org/Labs_16.04/System/Spectre_Attack/)
