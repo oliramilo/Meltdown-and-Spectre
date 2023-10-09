@@ -6,7 +6,7 @@ This report comprehensively examines Spectre and Meltdown vulnerabilities. Our g
 
 
 ## Requirements
-> Requires a machine that is susceptible to Meltdown & Spectre Attacks, prior to OS patch
+> * Requires a machine that is susceptible to Meltdown & Spectre Attacks, prior to OS patch
 
 
 ### Attack based on the SEED Labs
