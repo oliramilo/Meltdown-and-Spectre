@@ -9,11 +9,4 @@ This report comprehensively examines Spectre and Meltdown vulnerabilities. Our g
 > * Requires a machine that is susceptible to Meltdown & Spectre Attacks, prior to OS patch
 
 
-### Attack based on the SEED Labs
-
-[Link to meltdown](https://seedsecuritylabs.org/Labs_16.04/System/Meltdown_Attack/)
-
-[Link to spectre](https://seedsecuritylabs.org/Labs_16.04/System/Spectre_Attack/)
-
-
 
