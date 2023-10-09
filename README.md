@@ -7,6 +7,7 @@ This report comprehensively examines Spectre and Meltdown vulnerabilities. Our g
 
 
 ## Requirements
+<<<<<<< HEAD
 > * Requires a machine that is susceptible to Meltdown & Spectre Attacks, prior to OS patch. A VM is provided ![here](https://seed.nyc3.cdn.digitaloceanspaces.com/SEEDUbuntu-16.04-32bit.zip)
 
 
@@ -191,6 +192,9 @@ Meltdown is a vulnerability that exploits the flaw inside the Intel CPUs, if the
 
 
 
+=======
+> * Requires a machine that is susceptible to Meltdown & Spectre Attacks, prior to OS patch
+>>>>>>> cfaf9a2f823178a5cd3d0a406afc81d82c1bc5e2
 
 
 
