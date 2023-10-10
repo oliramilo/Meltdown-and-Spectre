@@ -496,4 +496,6 @@ During the **Out-of-Order execution**, the referenced memory is fetched into a r
 ![Image4](https://cdn.discordapp.com/attachments/1131246972372791429/1161292722867535922/image.png?ex=6537c520&is=65255020&hm=f0bb3734dfc177535573451df0112f2f21c0deb925251c24e424b8104ab0481b&)
 
 
+# Spectre Attack in C
+A Spectre attack is a type of security vulnerability that **exploits speculative execution** in modern microprocessors to access sensitive data. Potentially compromising the confidentiality of information. It allows attackers to trick a processor into **speculatively executing code** that should not be accessible, resulting in the leakage of sensitive data.
 
