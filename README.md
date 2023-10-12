@@ -746,9 +746,12 @@ gcc -march=native SpectreExperiment.c -o SpectreExperiment
 ```
 
 Result:
+
 ![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161716525506515055/image.png?ex=65394fd3&is=6526dad3&hm=fc2992011d0b7c7a19e35cbf6cbe2cc20ce61d3057cce5dac83ae619515fc7ea&)
+
 As we can see, we have successfully performed a Spectre Attack and gained the secret value `"Some Secret Value"`.
 
+This success is due to "training" the CPU within the for loop. We repeatedly called the **victim()** function with small values from 0 to 9, ensuring the if-condition inside 'victim()' always evaluated to 'true' because these values were always less than size. This training conditioned the CPU to expect 'true' outcomes. We then introduced our secret value to 'victim()' which triggered the 'false-branch' of the 'if-condition' inside 'victim'. However, we previously flushed the 'size' variable from memory, causing a delay in obtaining its result. During this time the CPU made a prediction and initiated speculative execution.
 
 
 ## References
