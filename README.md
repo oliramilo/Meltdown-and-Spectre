@@ -862,7 +862,11 @@ int main() {
   return 0;
 }
 ```
-Result:
+Compilation:
 ```
+gcc -march=native SpectreExperiment.c -o SpectreExperiment
 ```
 
+Result:
+![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161716525506515055/image.png?ex=65394fd3&is=6526dad3&hm=fc2992011d0b7c7a19e35cbf6cbe2cc20ce61d3057cce5dac83ae619515fc7ea&)
+As we can see, we have successfully performed a Spectre Attack and gained the secret value `"Some Secret Value"`.
