@@ -753,16 +753,16 @@ As we can see, we have successfully performed a Spectre Attack and gained the se
 
 ## References
 
-> (No date) Computer security: A hands-on approach | udemy. Available at: https://www.udemy.com/course/du-computer-security/ (Accessed: 12 October 2023). 
+> Computer security: A hands-on approach | udemy. Available at: https://www.udemy.com/course/du-computer-security/ (Accessed: 12 October 2023). 
 > 
-> Dingchang (no date) Dingchang/Seedlab, GitHub. Available at: https://github.com/Dingchang/SeedLab/tree/master (Accessed: 13 October 2023). 
+> Dingchang Dingchang/Seedlab, GitHub. Available at: https://github.com/Dingchang/SeedLab/tree/master (Accessed: 13 October 2023). 
 > 
 > Kocher, P. et al. (2018) Spectre attacks: Exploiting speculative execution, arXiv.org. Available at: https://arxiv.org/abs/1801.01203 (Accessed: 13 October 2023). 
 > 
 > Lipp, M. et al. (2018) Meltdown, arXiv.org. Available at: https://arxiv.org/abs/1801.01207 (Accessed: 13 October 2023). 
 > 
-> SamuelXing (no date) Samuelxing/MeltdownDemo: Meltdown attack demo., GitHub. Available at: https://github.com/SamuelXing/MeltdownDemo/tree/master (Accessed: 13 October 2023). 
+> SamuelXing Samuelxing/MeltdownDemo: Meltdown attack demo., GitHub. Available at: https://github.com/SamuelXing/MeltdownDemo/tree/master (Accessed: 13 October 2023). 
 > 
-> SEEDLabs Meltdown Attack (no date) Meltdown attack lab. Available at: https://seedsecuritylabs.org/Labs_16.04/System/Meltdown_Attack/ (Accessed: 13 October 2023). 
+> SEEDLabs Meltdown Attack Meltdown attack lab. Available at: https://seedsecuritylabs.org/Labs_16.04/System/Meltdown_Attack/ (Accessed: 13 October 2023). 
 >
-> SEEDLabs Spectre Attack (no date) Spectre attack lab. Available at: https://seedsecuritylabs.org/Labs_16.04/System/Spectre_Attack/ (Accessed: 13 October 2023). 
+> SEEDLabs Spectre Attack Spectre attack lab. Available at: https://seedsecuritylabs.org/Labs_16.04/System/Spectre_Attack/ (Accessed: 13 October 2023). 
