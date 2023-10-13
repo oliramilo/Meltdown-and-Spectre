@@ -3,7 +3,7 @@
 <h3>Authors(s): Anh Dinh (20175412), Bao Ngo (20987015), Olimar Ramilo (19763211)<h3>
 
 
-<H2>Sections</H2>
+<h2>Sections</h2>
 
 1. [Meltdown Attack](#meltdown-attack-in-c)
 2. [Spectre Attack](#spectre-attack-in-c)
