@@ -741,6 +741,11 @@ Result:
 Based on our results, it's clear that our Out-Of-Execution demonstration succeeded. We retrieved the secret code which is **`97`** that we added to our victim code. This success is due to **"training"** the CPU within the **`for`** loop, through the concept of **branch-prediction**. We repeatedly called the `**victim()**` function with small values from 0 to 9, ensuring the **`if-condition`** inside **'victim()'** always evaluated to **'true'** because these values were always less than **`size`**. This training conditioned the CPU to expect 'true' outcomes. We then introduced our secret value to **'victim()'** which triggered the **'false-branch'** of the **'if-condition'** inside **'victim'**. However, we previously flushed the **'size'** variable from memory, causing a delay in obtaining its result. During this time the CPU made a prediction and initiated speculative execution.
 
 ### The Spectre Attack
+
+#### Branch Prediction
+
+What is Branch prediction? Much like Out-of-order execution, branch prediction is a performance optimisation technique used in modern CPUs. It involves predicting the outcome of conditional branches (if-else statements) and indirect branches (function calls). The goal is to speculate on which path a branch will take, either true or false. This speculative execution minimised idle time and boosts performance of the processor. If the prediction was true, then the CPU avoids performance penalty. However, if the prediction was incorrect then the speculatively executed instructions must be discarded.
+
 We will now demonstrate the entire Spectre Attack all at once using the following code below. The aim of this program is to access the **`buffer[x]`** that is within **`restrictedAccess`** just like our previous **Out-of-order execution** and **Branch-prediction** demonstration.
 Note that we have calculated the offset of the secret from the beginning of the buffer, this is done through **`s = restrictedAccess(larger_x);`**, **`array[s*4096 + DELTA] += 88;`** and **`size_t larger_x = (size_t)(secret - (char*)buffer);`**.
 ```c
