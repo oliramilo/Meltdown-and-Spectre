@@ -534,7 +534,7 @@ gcc -march=native cachetime.c
 
 This outcome represents the findings from a single run. Based on our preliminary observations, it is clear that specific elements shows reduced CPU cycle times in contrast to others. This distinction underscores the differences in data access when comparing cache-based retrieval with data access from main memory. 
 ![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161594776756432946/image.png?ex=6538de70&is=65266970&hm=aaa63349796dffe49bec266539904252b9e861b9472c8f8d0c89de19df9e8ed7&)
-To ensure both consistency and precision in our initial observations, the code was executed an additional ten times. The following results, relating to the arrays with index [5x4096], [6x4096], and [9x4096], consistently demonstrated lower CPU cycles when compared to the corresponding arrays in all test scenarios.
+To ensure both consistency and precision in our initial observations, the code was executed an additional ten times. The following results, relating to the arrays with index [6x4096], and [9x4096], consistently demonstrated lower CPU cycles when compared to the corresponding arrays in all test scenarios.
 
 1.
 ![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161594935494053948/image.png?ex=6538de96&is=65266996&hm=7a6eb94e5ffca9bf19cb74b3428fe28c38ec99a8db2c52d89b2f06fa23d31724&)
@@ -675,6 +675,7 @@ In the provided code, a set of global variables takes on pivital roles in the pr
 What is **Out-of-Order execution?** Out-of-order execution is a performance enhancement strategy, that enables the CPU to make the most efficient use of its execution units. Rather than adhering to a strictly sequential order for processing instructions, the CPU performs them in parallel as soon as all necessary resources become accessible. This means that while one execution unit is engaged in the current operation other units can proceed with their tasks ahead of it.
 
 What is **Branch prediction?** Much like Out-of-order execution, branch prediction is a performance optimisation technique used in modern CPUs. It involves predicting the outcome of **conditional branches (if-else statements)** and **indirect branches (function calls)**. The goal is to speculate on which path a branch will take, either true or false. This speculative execution minimised idle time and boosts performance of the processor. If the prediction was true, then the CPU avoids performance penalty. However, if the prediction was incorrect then the speculatively executed instructions must be discarded.
+
 
 To demonstrate the Out-Of-Order Execution we will use the following code
 ```c
@@ -870,5 +871,6 @@ gcc -march=native SpectreExperiment.c -o SpectreExperiment
 ```
 
 Result:
+
 ![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161716525506515055/image.png?ex=65394fd3&is=6526dad3&hm=fc2992011d0b7c7a19e35cbf6cbe2cc20ce61d3057cce5dac83ae619515fc7ea&)
 As we can see, we have successfully performed a Spectre Attack and gained the secret value `"Some Secret Value"`.
