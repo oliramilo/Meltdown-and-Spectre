@@ -27,14 +27,14 @@ This report comprehensively examines Spectre and Meltdown vulnerabilities. Our g
 ## Meltdown Attack in C
 Meltdown is a vulnerability that exploits the flaw inside the Intel CPUs, if the target machine is an AMD system, the attack will not work. 
 
-To perform this attack we need to know th following:
+To perform this attack we need to know the following:
 * Cache timing 
 * Flush+Reload
 * Side channel attack via cache 
 * Kernel space vs User space 
 
 ### Step 1: Cache Timing
-The following code below tests how cache timing works and how it prepares us to perform a meltdown attack/
+The following code below tests how cache timing works and how it prepares us to perform a meltdown attack
 
 #### Code Explanation
 
