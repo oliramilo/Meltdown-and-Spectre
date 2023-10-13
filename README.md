@@ -631,22 +631,9 @@ Within this step we demonstrate the **FLUSH+RELOAD** technique to find the one-b
 gcc -march=native FlushReload.c -o FlushReload
 ```
 #### Result:
-![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161634969442074624/FlushReload1.png?ex=653903de&is=65268ede&hm=f65b6dcf476d095045335466739b5a424e07c9dd81b82dd10459aac55770f9d4&)
+![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1162369142704324700/image.png?ex=653baf9f&is=65293a9f&hm=31a56f0c9ad8eb61f23f6f52fc640f1c8b9cf4cf4a13a8649166cbac9cb3bb0b&)
 
-As illustrated in the image above, despite encountering multiple results during the execution of FlushReload indicating that we have hit cashe_threshold multiple times, we still successfully pinpointed our secret value of 94. It has to be noted that we have conducted the test an additional four times to ensure the precision of our findings, and each of these repeated trials revealed the secret value.
-
-1.
-![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161639103943680040/FlushReload2.png?ex=653907b8&is=652692b8&hm=cc463e00b079ac0d0a0d4adee23709e7a62bad30f01d910188455b2c7376edc6&)
-
-2.
-![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161640100736802877/FlushReload3.png?ex=653908a6&is=652693a6&hm=d1020f4457562f98cb62b3f71cd4a28e3587b67d46b2b23359ded34dcb6f885c&)
-
-3.
-![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161640100736802877/FlushReload3.png?ex=653908a6&is=652693a6&hm=d1020f4457562f98cb62b3f71cd4a28e3587b67d46b2b23359ded34dcb6f885c&)
-
-4.
-![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161640807070171196/FlushReload4.png?ex=6539094e&is=6526944e&hm=ca583ef9bc646b94c3ebffb5b91e5ea61d6c51be3be84c91ee285c9328feb2b6&)
-
+As illustrated in the image above, the program does not consistently obtain the secret value due to factors like cache state, code execution variations and more. Despite this we managed to retrieve the secret value **'94'** in multiple test runs. We conducted the test four times to confirm our results consistency.
 ### Explanation of FlushReload.c
 #### Global Variables
 
@@ -873,4 +860,5 @@ gcc -march=native SpectreExperiment.c -o SpectreExperiment
 Result:
 
 ![Image](https://cdn.discordapp.com/attachments/1131246972372791429/1161716525506515055/image.png?ex=65394fd3&is=6526dad3&hm=fc2992011d0b7c7a19e35cbf6cbe2cc20ce61d3057cce5dac83ae619515fc7ea&)
+
 As we can see, we have successfully performed a Spectre Attack and gained the secret value `"Some Secret Value"`.
