@@ -1,7 +1,6 @@
 # Meltdown and Spectre attack exploit
 
-> <h2>Authors(s): Anh Dinh (20175412), Bao Ngo (20987015), Olimar Ramilo (19763211)<h2>
-
+<h3>Authors(s): Anh Dinh (20175412), Bao Ngo (20987015), Olimar Ramilo (19763211)<h3>
 
 <H2>Sections</H2>
 
