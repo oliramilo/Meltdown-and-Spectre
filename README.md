@@ -34,7 +34,7 @@ To perform this attack we need to know the following:
 * Kernel space vs User space 
 
 ### Step 1: Cache Timing
-The following code below tests how cache timing works and how it prepares us to perform a meltdown attack
+The following code below tests how cache timing works and how it prepares us to perform a meltdown attack:
 
 #### Code Explanation
 
