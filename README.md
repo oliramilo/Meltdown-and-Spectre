@@ -123,6 +123,7 @@ Access time for array[9*4096]: 400 CPU cycles
 A diagram below illustrates Cache vs Main Memory read time
 
 ![diagram1](https://cdn.discordapp.com/attachments/1131246972372791429/1162073758257905664/image.png?ex=653a9c86&is=65282786&hm=4272068e9ec7b1d773d5eafc637ad8af4d9e218020921e4c2ed33d53c17a432b&)
+
 Diagram from: [SEEDLabs Meltdown Lab](https://seedsecuritylabs.org/Labs_16.04/PDF/Meltdown_Attack.pdf)
 
 ### Step 2: Side Channel attack via Cache
@@ -212,6 +213,7 @@ gcc -march=native FlushReload.c -o FlushReload
 We get the value of secret based by using flush+reload and side-channel attack by exploiting the cache time. In addition, to measure the accuracy, run the program multiple times to see the consistency of finding the secret. The diagram below illustrates how we accessed 94 by using the victim function due to cache storage. 
 
 ![diagram2](https://cdn.discordapp.com/attachments/1131246972372791429/1162073942861824121/image.png?ex=653a9cb2&is=652827b2&hm=da03087f5b1a493d3b9dbb9cd20fb5e19bfa6ae240d0177b49249b3ba78f3cf4&)
+
 Diagram from: [SEEDLabs Meltdown Lab](https://seedsecuritylabs.org/Labs_16.04/PDF/Meltdown_Attack.pdf)
 
 ### Explanation:
@@ -602,6 +604,7 @@ The attack was successful into accessing the kernel memory.
 > The get() function then analyzes the scores to identify which value of kernel_data was most likely in cache, assuming it corresponds to a valid kernel memory location. This value is printed as the "secret value."
 
 ![OoO](https://cdn.discordapp.com/attachments/1131246972372791429/1162073988479070278/image.png?ex=653a9cbd&is=652827bd&hm=47323c9f74ac9aa5b752b9758d46911abc9b7fc73482cf40ce0eb385df42b57a&)
+
 Diagram from: [SEEDLabs Meltdown Lab](https://seedsecuritylabs.org/Labs_16.04/PDF/Meltdown_Attack.pdf)
 
 <h3>Out of order execution</h3>
