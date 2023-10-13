@@ -1,5 +1,6 @@
 # Meltdown and Spectre attack exploit
 
+## Authors(s): Anh Dinh (20175412), Bao Ngo (20987015), Olimar Ramilo (19763211)
 
 
 <H2>Sections</H2>
@@ -31,7 +32,6 @@ To perform this attack we need to know th following:
 * Flush+Reload
 * Side channel attack via cache 
 * Kernel space vs User space 
-* 
 
 ### Step 1: Cache Timing
 The following code below tests how cache timing works and how it prepares us to perform a meltdown attack/
