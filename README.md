@@ -627,7 +627,12 @@ A Spectre attack is a type of security vulnerability that **exploits speculative
 * Flush+Reload
 * Out-of-Order Execution
 
-We will now demonstrate the entire Spectre Attack all at once using the following code below. The aim of this program is to access the **`buffer[x]`** that is within **`restrictedAccess`** just like our previous **Out-of-order execution**.
+As well as Speculative Execution.
+
+#### Speculative Execution: Branch Prediction
+What is Branch prediction? Much like Out-of-order execution, branch prediction is a performance optimisation technique used in modern CPUs. It involves predicting the outcome of conditional branches (if-else statements) and indirect branches (function calls). The goal is to speculate on which path a branch will take, either true or false. This speculative execution minimised idle time and boosts performance of the processor. If the prediction was true, then the CPU avoids performance penalty. However, if the prediction was incorrect then the speculatively executed instructions must be discarded.
+
+We will now demonstrate the entire Spectre Attack all at once using the following code below. The aim of this program is to access the **`buffer[x]`** that is within **`restrictedAccess`** just like our previous **Out-of-order execution** and **Branch-prediction** demonstration.
 Note that we have calculated the offset of the secret from the beginning of the buffer, this is done through **`s = restrictedAccess(larger_x);`**, **`array[s*4096 + DELTA] += 88;`** and **`size_t larger_x = (size_t)(secret - (char*)buffer);`**.
 
 
